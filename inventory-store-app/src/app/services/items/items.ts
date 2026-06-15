@@ -30,7 +30,7 @@ export class ItemService {
   }
 
 
-  delete(id: string, updatedBy: string): Observable<APIResponse<void>> {
+  delete(id: string): Observable<APIResponse<void>> {
     return this.http.delete<APIResponse<void>>(`${this.baseUrl}`,{
       params: { itemId: id }
     });
