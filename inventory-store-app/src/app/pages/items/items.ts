@@ -139,6 +139,7 @@ export class ItemsComponent implements OnInit {
       }
     });
   }
+  
 
   closeAll(): void {
     this.showForm = false;
