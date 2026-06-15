@@ -1,0 +1,48 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>Create Account</h2>
+    <p class="subtitle">Get started with your inventory</p>
+
+    <div class="error-msg" *ngIf="error">{{ error }}</div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" formControlName="name" placeholder="John Doe"/>
+        <span class="error" *ngIf="form.get('name')?.touched && form.get('name')?.invalid">
+          Name is required
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" formControlName="email" placeholder="john@example.com"/>
+        <span class="error" *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+          Valid email is required
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" formControlName="password" placeholder="Min 6 characters"/>
+        <span class="error" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+          Password must be at least 6 characters
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label>Organisation Name <span class="optional">(optional)</span></label>
+        <input type="text" formControlName="organisationName"
+               placeholder="Defaults to 'Your Name's Organisation'"/>
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="loading">
+        {{ loading ? 'Creating account...' : 'Create Account' }}
+      </button>
+    </form>
+
+    <p class="switch-link">
+      Already have an account? <a routerLink="/login">Sign In</a>
+    </p>
+  </div>
+</div>

@@ -1,0 +1,67 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Organisation</h1>
+  </div>
+
+  <div class="alert success" *ngIf="success">{{ success }}</div>
+  <div class="alert error"   *ngIf="error">{{ error }}</div>
+
+  <div class="org-detail-card" *ngIf="organisation">
+
+    <!-- View Mode -->
+    <div *ngIf="!isEditing">
+      <div class="card-header">
+        <div class="org-avatar">{{ organisation.name.charAt(0).toUpperCase() }}</div>
+        <div>
+          <h2>{{ organisation.name }}</h2>
+          <span class="badge" [class.active]="organisation.isActive"
+                [class.inactive]="!organisation.isActive">
+            {{ organisation.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+        <button class="btn-primary edit-btn" (click)="toggleEdit()">Edit</button>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-row">
+          <span class="detail-label">Organisation ID</span>
+          <span class="detail-value mono">{{ organisation.id }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Created</span>
+          <span class="detail-value">{{ organisation.createdAt | date:'dd MMM yyyy, HH:mm' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Last Updated</span>
+          <span class="detail-value">{{ organisation.updatedAt | date:'dd MMM yyyy, HH:mm' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Mode -->
+    <div *ngIf="isEditing">
+      <h3 class="edit-title">Edit Organisation</h3>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="form-group">
+          <label>Organisation Name</label>
+          <input type="text" formControlName="name" placeholder="Organisation name"/>
+          <span class="error"
+                *ngIf="form.get('name')?.touched && form.get('name')?.invalid">
+            Name must be at least 2 characters
+          </span>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="toggleEdit()">
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary" [disabled]="loading">
+            {{ loading ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>

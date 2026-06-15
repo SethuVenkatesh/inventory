@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: inventory-store
+  datasource:
+    url: jdbc:postgresql://db.lzgkypcahxycfpfnlaqd.supabase.co:5432/postgres
+    username: postgres
+    password: SethuVirat@18
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+# JWT (top-level properties expected by JwtService @Value)
+jwt:
+  secret: RjM0b1J3M3FJYzF0Wk5rR1RkR1l6M1FhU1VjT2RrT1pVd0VjY2t1Vw=
+  expiration: 86400000
