@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/items")
+@RequestMapping("/api/organisations/{organisationId}/items")
 public class ItemController {
 
     private final ItemService service;
@@ -27,46 +27,51 @@ public class ItemController {
 
     @PostMapping()
     public ResponseEntity<APIResponse<ItemDTO>> create(
+            @PathVariable UUID organisationId,
             @Validated({ItemDTO.OnCreate.class}) @RequestBody ItemDTO dto,
             @AuthenticationPrincipal User user
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(APIResponse.created(service.create(dto,user)));
+                .body(APIResponse.created(service.create(organisationId,dto,user)));
     }
 
 
 
-    @PutMapping()
+    @PutMapping("/{itemId}")
     public ResponseEntity<APIResponse<ItemDTO>> update(
-            @RequestParam(name = "itemId",required = true) UUID itemId,
+            @PathVariable UUID organisationId,
+            @PathVariable UUID itemId,
             @Validated({ItemDTO.OnUpdate.class}) @RequestBody ItemDTO dto,
             @AuthenticationPrincipal User user
     ) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(APIResponse.success(service.update(dto,user,itemId)));
+                .body(APIResponse.success(service.update(organisationId,itemId,dto,user)));
     }
 
     @GetMapping("/all")
     public ResponseEntity<APIResponse<List<ItemDTO>>> getAll(
+            @PathVariable UUID organisationId,
             @AuthenticationPrincipal User user
     )
     {
-        return ResponseEntity.ok(APIResponse.success(service.getAll(user)));
+        return ResponseEntity.ok(APIResponse.success(service.getAll(organisationId,user)));
     }
 
-    @GetMapping
+    @GetMapping("/{itemId}")
     public ResponseEntity<APIResponse<ItemDTO>> getById(
-            @RequestParam(name = "itemId",required = true) UUID itemId,
+            @PathVariable UUID organisationId,
+            @PathVariable UUID itemId,
             @AuthenticationPrincipal User user
     ) {
-        return ResponseEntity.ok(APIResponse.success(service.getById(user,itemId)));
+        return ResponseEntity.ok(APIResponse.success(service.getById(organisationId,itemId,user)));
     }
 
-    @DeleteMapping("")
+    @DeleteMapping("{itemId}")
     public ResponseEntity<APIResponse<Void>> delete(
-            @RequestParam(name = "itemId",required = true) UUID itemId,
+            @PathVariable UUID organisationId,
+            @PathVariable UUID itemId,
             @AuthenticationPrincipal User user) {
-        service.softDelete(user, itemId);
+        service.softDelete(organisationId,itemId,user);
         return ResponseEntity.ok(APIResponse.deleted());
     }
 

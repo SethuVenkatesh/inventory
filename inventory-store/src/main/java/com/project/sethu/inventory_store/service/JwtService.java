@@ -29,8 +29,6 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole());
         claims.put("userId", user.getId().toString());
-        claims.put("organisationId",
-                user.getOrganisation() != null ? user.getOrganisation().getId().toString() : null);
 
         return Jwts.builder()
                 .claims(claims)
@@ -45,10 +43,6 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public UUID extractOrganisationId(String token) {
-        String orgId = extractClaim(token, claims -> claims.get("organisationId", String.class));
-        return orgId != null ? UUID.fromString(orgId) : null;
-    }
 
     public UUID extractUserId(String token) {
         String userId = extractClaim(token, claims -> claims.get("userId", String.class));

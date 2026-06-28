@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -37,9 +38,11 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private String role = "USER";
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organisation_id")
-    private Organisation organisation;
+//    // All org links via junction table
+//    @OneToMany(mappedBy = "user",
+//            fetch = FetchType.EAGER,
+//            cascade = CascadeType.ALL)
+//    private List<UserOrganisation> userOrganisations = new ArrayList<>();
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
@@ -75,5 +78,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() { return isActive; }
+
 
 }

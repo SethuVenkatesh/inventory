@@ -4,8 +4,9 @@ import com.project.sethu.inventory_store.dto.APIResponse;
 import com.project.sethu.inventory_store.dto.OrganisationDTO;
 import com.project.sethu.inventory_store.entity.User;
 import com.project.sethu.inventory_store.service.OrganisationService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,39 +23,46 @@ public class OrganisationController {
         this.service = service;
     }
 
-//    @GetMapping("/all")
-//    public ResponseEntity<APIResponse<List<OrganisationDTO>>> getAll() {
-//        return ResponseEntity.ok(APIResponse.success(service.getAll()));
-//    }
+    @GetMapping("/all")
+    public ResponseEntity<APIResponse<List<OrganisationDTO>>> getAll(
+            @AuthenticationPrincipal User user
+    ) {
+        return ResponseEntity.ok(APIResponse.success(service.getAllOrganisation(user)));
+    }
 
-    @GetMapping("")
+    @GetMapping("{id}")
     public ResponseEntity<APIResponse<OrganisationDTO>> getById(
+            @PathVariable("id") UUID organisationId,
             @AuthenticationPrincipal User user
     )
     {
-        return ResponseEntity.ok(APIResponse.success(service.getById(user)));
+        return ResponseEntity.ok(APIResponse.success(service.getById(user,organisationId)));
     }
 
-//    @PostMapping
-//    public ResponseEntity<APIResponse<OrganisationDTO>> create(@Validated({OrganisationDTO.OnCreate.class}) @RequestBody OrganisationDTO dto) {
-//        return ResponseEntity.status(HttpStatus.CREATED)
-//                .body(APIResponse.created(service.create(dto)));
-//    }
-
-    @PutMapping("")
-    public ResponseEntity<APIResponse<OrganisationDTO>> update(
-            @Validated({OrganisationDTO.OnUpdate.class}) @RequestBody OrganisationDTO dto,
+    @PostMapping
+    public ResponseEntity<APIResponse<OrganisationDTO>> create(
+            @Validated({OrganisationDTO.OnCreate.class}) @RequestBody OrganisationDTO dto,
             @AuthenticationPrincipal User user
     ) {
-        return ResponseEntity.ok(APIResponse.success("Updated successfully", service.update(user, dto)));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(APIResponse.created(service.create(user,dto)));
     }
 
-//    @DeleteMapping("")
-//    public ResponseEntity<APIResponse<Void>> delete(
-//            @RequestParam(name = "organisationId",required = true) UUID organisationId,
-//            @AuthenticationPrincipal User user
-//    ) {
-//        service.softDelete(user);
-//        return ResponseEntity.ok(APIResponse.deleted());
-//    }
+    @PutMapping("/{id}")
+    public ResponseEntity<APIResponse<OrganisationDTO>> update(
+            @Validated({OrganisationDTO.OnUpdate.class}) @RequestBody OrganisationDTO dto,
+            @PathVariable("id") UUID organisationId,
+            @AuthenticationPrincipal User user
+    ) {
+        return ResponseEntity.ok(APIResponse.success("Updated successfully", service.update(user, dto, organisationId)));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<APIResponse<Void>> delete(
+            @PathVariable("id") UUID organisationId,
+            @AuthenticationPrincipal User user
+    ) {
+        service.softDelete(user,organisationId);
+        return ResponseEntity.ok(APIResponse.deleted());
+    }
 }

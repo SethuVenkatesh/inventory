@@ -16,6 +16,9 @@ public class OrganisationDTO {
     @NotBlank(groups = {OnCreate.class,OnUpdate.class}, message = "Organisation Name is required")
     @Size(groups = {OnCreate.class,OnUpdate.class},min = 2, max = 255, message = "Name must be between 2 and 255 characters")
     private String name;
+    // Whether this is the user's primary organisation
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Boolean isPrimary;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private OffsetDateTime createdAt;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

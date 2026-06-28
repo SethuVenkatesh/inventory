@@ -1,0 +1,434 @@
+<div class="dashboard-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="logo-icon">⚡</span>
+      <span class="logo-text">InventoryStore</span>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <a class="nav-item" [class.active]="activeTab === 'items'" (click)="activeTab = 'items'">
+        <span class="nav-icon">📦</span> Items
+      </a>
+      <a class="nav-item" [class.active]="activeTab === 'organisations'" (click)="activeTab = 'organisations'">
+        <span class="nav-icon">🏢</span> Organisations
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-profile">
+        <div class="avatar">{{ currentUser?.name?.charAt(0) || 'U' }}</div>
+        <div class="user-info">
+          <div class="user-name">{{ currentUser?.name }}</div>
+          <div class="user-role">{{ currentUser?.role }}</div>
+        </div>
+      </div>
+      <button class="btn-logout" (click)="logout()">
+        <span>🚪</span> Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <!-- Header -->
+    <header class="main-header">
+      <div class="header-left">
+        <h1 class="page-title">{{ activeTab === 'items' ? 'Inventory Items' : 'Manage Organisations' }}</h1>
+      </div>
+      
+      <div class="header-right">
+        <!-- Organisation Switcher -->
+        <div class="org-switcher-wrapper">
+          <label for="org-select" class="org-label">Active Workspace:</label>
+          <select id="org-select" class="org-select-dropdown" [ngModel]="selectedOrgId" (ngModelChange)="onOrgChange($event)">
+            @for (org of organisations; track org.id) {
+              <option [value]="org.id">{{ org.name }} {{(org.isPrimary ? '(Primary)' : '')}}</option>
+            } @empty {
+              <option value="">No Organisations</option>
+            }
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Panel -->
+    <div class="content-body">
+      <!-- ITEMS TAB -->
+      @if (activeTab === 'items') {
+        <!-- Stats Summary -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Total Items</div>
+            <div class="stat-value">{{ totalItemsCount }}</div>
+            <div class="stat-icon">📦</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Rate Value</div>
+            <div class="stat-value">{{ totalInventoryValue | number:'1.2-2' }} <span class="currency">INR</span></div>
+            <div class="stat-icon">💰</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active Organisation</div>
+            <div class="stat-value text-truncate">{{ activeOrgName }}</div>
+            <div class="stat-icon">🏢</div>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input 
+              type="text" 
+              placeholder="Search items by name..." 
+              [(ngModel)]="itemSearchQuery" 
+              class="search-input"
+            />
+          </div>
+
+          <div class="toolbar-actions">
+            @if (selectedOrgId) {
+              <button class="btn btn-primary" (click)="showAddItemModal = true">
+                <span>➕</span> Add Item
+              </button>
+            } @else {
+              <button class="btn btn-secondary" disabled title="Create an organisation first">
+                <span>➕</span> Add Item
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="table-container animate-fade-in">
+          @if (loadingItems) {
+            <div class="loading-state">
+              <div class="spinner-large"></div>
+              <p>Fetching inventory items...</p>
+            </div>
+          } @else {
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th (click)="changeSort('name')" class="sortable-header">
+                    Item Name 
+                    @if (itemSortKey === 'name') {
+                      <span>{{ itemSortAsc ? '▲' : '▼' }}</span>
+                    }
+                  </th>
+                  <th (click)="changeSort('rate')" class="sortable-header">
+                    Rate 
+                    @if (itemSortKey === 'rate') {
+                      <span>{{ itemSortAsc ? '▲' : '▼' }}</span>
+                    }
+                  </th>
+                  <th>Currency</th>
+                  <th (click)="changeSort('createdAt')" class="sortable-header">
+                    Created At
+                    @if (itemSortKey === 'createdAt') {
+                      <span>{{ itemSortAsc ? '▲' : '▼' }}</span>
+                    }
+                  </th>
+                  <th>Created By</th>
+                  <th class="actions-col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of filteredItems; track item.id) {
+                  <tr>
+                    <td class="font-semibold">{{ item.name }}</td>
+                    <td class="font-mono">{{ item.rate | number:'1.2-2' }}</td>
+                    <td><span class="currency-badge">{{ item.currency || 'INR' }}</span></td>
+                    <td class="text-muted">{{ item.createdAt | date:'mediumDate' }}</td>
+                    <td>{{ item.createdBy || 'System' }}</td>
+                    <td class="actions-cell">
+                      <button class="btn-action btn-edit" (click)="openEditItemModal(item)" title="Edit Item">
+                        ✏️
+                      </button>
+                      <button class="btn-action btn-delete" (click)="onDeleteItem(item)" title="Delete Item">
+                        🗑️
+                      </button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="6" class="empty-table-row">
+                      <div class="empty-state">
+                        <span class="empty-icon">📦</span>
+                        <h3>No items found</h3>
+                        @if (!selectedOrgId) {
+                          <p>Please create or select an organisation workspace first.</p>
+                        } @else if (itemSearchQuery) {
+                          <p>No items match your search query "{{ itemSearchQuery }}".</p>
+                        } @else {
+                          <p>Get started by adding your first item to this organisation!</p>
+                          <button class="btn btn-primary" (click)="showAddItemModal = true">
+                            Add Item
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </div>
+      }
+
+      <!-- ORGANISATIONS TAB -->
+      @if (activeTab === 'organisations') {
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <div>
+            <p class="section-desc">Manage your organisation workspaces. You can switch between active workspaces using the dropdown in the header.</p>
+          </div>
+          <div class="toolbar-actions">
+            <button class="btn btn-primary" (click)="showAddOrgModal = true">
+              <span>➕</span> New Organisation
+            </button>
+          </div>
+        </div>
+
+        <!-- Organisations Grid -->
+        <div class="org-grid animate-fade-in">
+          @if (loadingOrgs) {
+            <div class="loading-state">
+              <div class="spinner-large"></div>
+              <p>Loading organisations...</p>
+            </div>
+          } @else {
+            @for (org of organisations; track org.id) {
+              <div class="org-card" [class.primary-org-card]="org.isPrimary">
+                @if (org.isPrimary) {
+                  <span class="primary-badge">Primary</span>
+                }
+                <div class="org-card-icon">🏢</div>
+                <h3 class="org-card-title">{{ org.name }}</h3>
+                <p class="org-card-meta">Created: {{ org.createdAt | date:'mediumDate' }}</p>
+                <p class="org-card-owner">By: {{ org.createdBy }}</p>
+                
+                <div class="org-card-actions">
+                  <button class="btn btn-sm btn-outline-primary" (click)="openEditOrgModal(org)">
+                    Rename
+                  </button>
+                  @if (!org.isPrimary) {
+                    <button class="btn btn-sm btn-outline-danger" (click)="onDeleteOrg(org)">
+                      Delete
+                    </button>
+                  }
+                </div>
+              </div>
+            } @empty {
+              <div class="empty-state full-width-empty">
+                <span class="empty-icon">🏢</span>
+                <h3>No organisations found</h3>
+                <p>You don't belong to any organisation. Create one to get started!</p>
+                <button class="btn btn-primary" (click)="showAddOrgModal = true">
+                  Create Organisation
+                </button>
+              </div>
+            }
+          }
+        </div>
+      }
+    </div>
+  </main>
+</div>
+
+<!-- ================= MODALS ================= -->
+
+<!-- Add Organisation Modal -->
+@if (showAddOrgModal) {
+  <div class="modal-overlay">
+    <div class="modal-card animate-slide-in">
+      <div class="modal-header">
+        <h3>Create Organisation</h3>
+        <button class="btn-close" (click)="showAddOrgModal = false">×</button>
+      </div>
+      <form [formGroup]="orgForm" (ngSubmit)="onCreateOrg()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="new-org-name">Organisation Name</label>
+            <input 
+              id="new-org-name" 
+              type="text" 
+              formControlName="name" 
+              placeholder="e.g. Acme Corporation" 
+              [class.is-invalid]="orgForm.get('name')?.touched && orgForm.get('name')?.invalid"
+            />
+            @if (orgForm.get('name')?.touched && orgForm.get('name')?.invalid) {
+              <div class="invalid-feedback">
+                Name is required (minimum 2 characters)
+              </div>
+            }
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="showAddOrgModal = false">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="submitting">
+            @if (submitting) { Creating... } @else { Create }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Edit Organisation Modal -->
+@if (showEditOrgModal) {
+  <div class="modal-overlay">
+    <div class="modal-card animate-slide-in">
+      <div class="modal-header">
+        <h3>Rename Organisation</h3>
+        <button class="btn-close" (click)="showEditOrgModal = false">×</button>
+      </div>
+      <form [formGroup]="editOrgForm" (ngSubmit)="onUpdateOrg()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="edit-org-name">Organisation Name</label>
+            <input 
+              id="edit-org-name" 
+              type="text" 
+              formControlName="name" 
+              placeholder="e.g. Acme Corporation" 
+              [class.is-invalid]="editOrgForm.get('name')?.touched && editOrgForm.get('name')?.invalid"
+            />
+            @if (editOrgForm.get('name')?.touched && editOrgForm.get('name')?.invalid) {
+              <div class="invalid-feedback">
+                Name is required (minimum 2 characters)
+              </div>
+            }
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="showEditOrgModal = false">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="submitting">
+            @if (submitting) { Updating... } @else { Save }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Add Item Modal -->
+@if (showAddItemModal) {
+  <div class="modal-overlay">
+    <div class="modal-card animate-slide-in">
+      <div class="modal-header">
+        <h3>Add Inventory Item</h3>
+        <button class="btn-close" (click)="showAddItemModal = false">×</button>
+      </div>
+      <form [formGroup]="itemForm" (ngSubmit)="onCreateItem()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="new-item-name">Item Name</label>
+            <input 
+              id="new-item-name" 
+              type="text" 
+              formControlName="name" 
+              placeholder="e.g. Laptop Charger" 
+              [class.is-invalid]="itemForm.get('name')?.touched && itemForm.get('name')?.invalid"
+            />
+            @if (itemForm.get('name')?.touched && itemForm.get('name')?.invalid) {
+              <div class="invalid-feedback">
+                Item name is required (minimum 2 characters)
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="new-item-rate">Rate (INR)</label>
+            <input 
+              id="new-item-rate" 
+              type="number" 
+              formControlName="rate" 
+              placeholder="0.00" 
+              [class.is-invalid]="itemForm.get('rate')?.touched && itemForm.get('rate')?.invalid"
+            />
+            @if (itemForm.get('rate')?.touched && itemForm.get('rate')?.invalid) {
+              <div class="invalid-feedback">
+                Rate is required and must be 0 or greater
+              </div>
+            }
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="showAddItemModal = false">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="submitting">
+            @if (submitting) { Adding... } @else { Add Item }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Edit Item Modal -->
+@if (showEditItemModal) {
+  <div class="modal-overlay">
+    <div class="modal-card animate-slide-in">
+      <div class="modal-header">
+        <h3>Edit Item Details</h3>
+        <button class="btn-close" (click)="showEditItemModal = false">×</button>
+      </div>
+      <form [formGroup]="editItemForm" (ngSubmit)="onUpdateItem()">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="edit-item-name">Item Name</label>
+            <input 
+              id="edit-item-name" 
+              type="text" 
+              formControlName="name" 
+              placeholder="e.g. Laptop Charger" 
+              [class.is-invalid]="editItemForm.get('name')?.touched && editItemForm.get('name')?.invalid"
+            />
+            @if (editItemForm.get('name')?.touched && editItemForm.get('name')?.invalid) {
+              <div class="invalid-feedback">
+                Item name is required (minimum 2 characters)
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="edit-item-rate">Rate (INR)</label>
+            <input 
+              id="edit-item-rate" 
+              type="number" 
+              formControlName="rate" 
+              placeholder="0.00" 
+              [class.is-invalid]="editItemForm.get('rate')?.touched && editItemForm.get('rate')?.invalid"
+            />
+            @if (editItemForm.get('rate')?.touched && editItemForm.get('rate')?.invalid) {
+              <div class="invalid-feedback">
+                Rate is required and must be 0 or greater
+              </div>
+            }
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="showEditItemModal = false">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="submitting">
+            @if (submitting) { Updating... } @else { Save Changes }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Toast Notifications -->
+<div class="toast-container">
+  @for (toast of toasts; track toast.id) {
+    <div class="toast animate-slide-in-right" [class]="'toast-' + toast.type">
+      <span class="toast-icon">
+        @if (toast.type === 'success') { Check }
+        @else if (toast.type === 'error') { Alert }
+        @else { Info }
+      </span>
+      <span class="toast-message">{{ toast.message }}</span>
+    </div>
+  }
+</div>

@@ -30,8 +30,7 @@ public class ItemService {
 
 
 
-    public ItemDTO create(ItemDTO dto, User user) {
-        UUID organisationId = getByUser(user);
+    public ItemDTO create(UUID organisationId, ItemDTO dto, User user) {
         Organisation organisation= organisationRepository.findByIdAndIsActiveTrue(organisationId);
         if(organisation==null) throw new ResourceNotFoundException("Organisation not found with id: " + organisationId);
         boolean itemExsist = itemRepository.existsByNameAndOrganisationIdAndIsActiveTrue(dto.getName(),organisationId);
@@ -49,8 +48,7 @@ public class ItemService {
     }
 
 
-    public ItemDTO update(ItemDTO dto, User user, UUID itemId) {
-        UUID organisationId = getByUser(user);
+    public ItemDTO update(UUID organisationId, UUID itemId, ItemDTO dto, User user) {
         Organisation organisation= organisationRepository.findByIdAndIsActiveTrue(organisationId);
         if(organisation==null) throw new ResourceNotFoundException("Organisation not found with id: " + organisationId);
         Item item = itemRepository.findByIdAndOrganisationIdAndIsActiveTrue(itemId,organisationId);
@@ -68,16 +66,14 @@ public class ItemService {
     }
 
 
-    public List<ItemDTO> getAll(User user) {
-        UUID organisationId = getByUser(user);
+    public List<ItemDTO> getAll(UUID organisationId, User user)  {
         Organisation organisation= organisationRepository.findByIdAndIsActiveTrue(organisationId);
         if(organisation==null) throw new ResourceNotFoundException("Organisation not found with id: " + organisationId);
         List<Item> items =itemRepository.findByOrganisationIdAndIsActiveTrue(organisationId);
         return itemMapper.toDTOList(items);
     }
 
-    public ItemDTO getById(User user, UUID itemId) {
-        UUID organisationId = getByUser(user);
+    public ItemDTO getById(UUID organisationId,UUID itemId, User user) {
         Organisation organisation= organisationRepository.findByIdAndIsActiveTrue(organisationId);
         if(organisation==null) throw new ResourceNotFoundException("Organisation not found with id: " + organisationId);
         Item item =itemRepository.findByIdAndOrganisationIdAndIsActiveTrue(itemId,organisationId);
@@ -87,8 +83,7 @@ public class ItemService {
         return itemMapper.toDTO(item);
     }
 
-    public void softDelete(User user, UUID itemId) {
-        UUID organisationId = getByUser(user);
+    public void softDelete(UUID organisationId, UUID itemId, User user) {
         Item item = itemRepository.findByIdAndOrganisationIdAndIsActiveTrue(itemId, organisationId);
         if (item == null) {
             throw new ResourceNotFoundException("Item not found with id: " + itemId);
@@ -97,10 +92,4 @@ public class ItemService {
         itemRepository.save(item);
     }
 
-    public UUID getByUser(User user) {
-        if (user.getOrganisation() == null) {
-            throw new ResourceNotFoundException("No organisation linked to this user");
-        }
-        return user.getOrganisation().getId();
-    }
 }
