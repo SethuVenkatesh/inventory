@@ -57,6 +57,7 @@ public class SecurityConfig {
 
         config.addAllowedOrigin("http://localhost:4200");
         config.addAllowedOrigin("https://inventory-store-9g45.onrender.com");
+        config.addAllowedOrigin("https://inventory-store-app.vercel.app");
         config.addAllowedMethod("*");
         config.addAllowedHeader("*");
         config.setAllowCredentials(true);

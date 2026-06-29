@@ -15,6 +15,7 @@ public class CorsConfig {
 
         config.addAllowedOrigin("http://localhost:4200");
         config.addAllowedOrigin("https://inventory-store-9g45.onrender.com");   // Angular dev server
+        config.addAllowedOrigin("https://inventory-store-app.vercel.app");
         config.addAllowedMethod("*");                       // GET, POST, PUT, DELETE, OPTIONS
         config.addAllowedHeader("*");                       // Authorization, Content-Type, etc
         config.setAllowCredentials(true);                   // Allow cookies/auth headers
