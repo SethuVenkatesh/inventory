@@ -3,14 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Organisation } from '../models/organisation.model';
 import { ApiResponse } from '../models/api-response.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrganisationService {
-  private baseUrl = '/api/organisations';
+  private baseUrl = `${environment.apiBase}/organisations`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {}  
 
   getAll(): Observable<ApiResponse<Organisation[]>> {
     return this.http.get<ApiResponse<Organisation[]>>(`${this.baseUrl}/all`);

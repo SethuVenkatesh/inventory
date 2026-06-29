@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Item } from '../models/item.model';
 import { ApiResponse } from '../models/api-response.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class ItemService {
   constructor(private http: HttpClient) {}
 
   private getUrl(orgId: string): string {
-    return `/api/organisations/${orgId}/items`;
+    return `${environment.apiBase}/organisations/${orgId}/items`;
   }
 
   getAll(orgId: string): Observable<ApiResponse<Item[]>> {

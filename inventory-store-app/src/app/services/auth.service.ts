@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LoginRequest, RegisterRequest, AuthResponse, User } from '../models/auth.model';
 import { ApiResponse } from '../models/api-response.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -55,7 +56,7 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<ApiResponse<AuthResponse>> {
-    return this.http.post<ApiResponse<AuthResponse>>('/api/auth/login', credentials).pipe(
+    return this.http.post<ApiResponse<AuthResponse>>(`${environment.apiBase}/auth/login`, credentials).pipe(
       map(response => {
         if (response.success && response.data) {
           const authData = response.data;
@@ -80,7 +81,7 @@ export class AuthService {
   }
 
   register(regRequest: RegisterRequest): Observable<ApiResponse<AuthResponse>> {
-    return this.http.post<ApiResponse<AuthResponse>>('/api/auth/register', regRequest).pipe(
+    return this.http.post<ApiResponse<AuthResponse>>(`${environment.apiBase}/auth/register`, regRequest).pipe(
       map(response => {
         if (response.success && response.data) {
           const authData = response.data;
