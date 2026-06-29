@@ -1,9 +1,9 @@
 {
   "buildCommand": "npm run build:prod",
-  "outputDirectory": "dist/inventory-store-app",
+  "outputDirectory": "dist/inventory-store-app/browser",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]
