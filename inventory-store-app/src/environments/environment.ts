@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiBase: '/api'
+  apiBase: 'https://inventory-store-9g45.onrender.com/api'
 };
