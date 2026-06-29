@@ -1,4 +1,6 @@
 {
+  "buildCommand": "npm run build:prod",
+  "outputDirectory": "dist/inventory-store-app",
   "rewrites": [
     {
       "source": "/(.*)",
