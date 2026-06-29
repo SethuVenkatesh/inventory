@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "https://inventory-store-9g45.onrender.com",
+    "target": "http://localhost:8080",
     "secure": false,
     "logLevel": "debug"
   }
