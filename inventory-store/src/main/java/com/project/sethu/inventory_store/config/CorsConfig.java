@@ -13,7 +13,7 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.addAllowedOrigin("http://localhost:4200");   // Angular dev server
+        config.addAllowedOrigin("http://localhost:4200","https://inventory-store-9g45.onrender.com");   // Angular dev server
         config.addAllowedMethod("*");                       // GET, POST, PUT, DELETE, OPTIONS
         config.addAllowedHeader("*");                       // Authorization, Content-Type, etc
         config.setAllowCredentials(true);                   // Allow cookies/auth headers
