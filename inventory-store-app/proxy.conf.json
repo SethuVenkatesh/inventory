@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "https://inventory-store-9g45.onrender.com/login",
+    "target": "https://inventory-store-9g45.onrender.com",
     "secure": false,
     "logLevel": "debug"
   }
