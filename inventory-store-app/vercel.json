@@ -1,11 +1,7 @@
 {
-  "buildCommand": "npm run build:prod",
+  "buildCommand": "npm run build",
   "outputDirectory": "dist/inventory-store-app/browser",
   "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://inventory-store-9g45.onrender.com/api/:path*"
-    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
