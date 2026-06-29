@@ -3,7 +3,11 @@
   "outputDirectory": "dist/inventory-store-app/browser",
   "rewrites": [
     {
-      "source": "/((?!api/).*)",
+      "source": "/api/:path*",
+      "destination": "https://inventory-store-9g45.onrender.com/api/:path*"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
