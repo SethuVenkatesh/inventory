@@ -149,6 +149,9 @@
                       <button class="btn-action btn-delete" (click)="onDeleteItem(item)" title="Delete Item">
                         <mat-icon>delete</mat-icon>
                       </button>
+                           <button class="btn-action btn-history" (click)="openItemHistoryModal(item)" title="Delete Item">
+                        <mat-icon>history</mat-icon>
+                      </button>
                     </td>
                   </tr>
                 } @empty {
@@ -415,6 +418,65 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+}
+
+
+<!-- History Modal -->
+@if (showHistoryModal) {
+  <div class="modal-overlay">
+    <div class="modal-card animate-slide-in">
+      <div class="modal-header">
+        <h3>Item History</h3>
+        <button class="btn-close" (click)="showHistoryModal = false"><mat-icon>close</mat-icon></button>
+      </div>
+      <div class="modal-body">
+        @if (loadingHistory) {
+          <div class="loading-state">
+            <div class="spinner-large"></div>
+            <p>Loading item history...</p>
+          </div>
+        } @else {
+          @if (history && history.length > 0) {
+            <div class="timeline">
+              @for (h of history; track h.id) {
+                <div class="timeline-item">
+                  <div class="timeline-time">
+                    <div class="time-date">{{ h.changedAt || h.updatedAt || h.createdAt | date:'mediumDate' }}</div>
+                    <div class="time-hour">{{ h.changedAt || h.updatedAt || h.createdAt | date:'shortTime' }}</div>
+                  </div>
+                  <div class="timeline-marker"></div>
+                  <div class="timeline-content">
+                    <div class="timeline-header">
+                      <strong>{{ h.updatedBy || h.createdBy || 'System' }}</strong>
+                      <span class="timeline-field">{{ getChangeField(h) }}</span>
+                    </div>
+                    <div class="timeline-body">
+                      @for (change of getChangedValues(h); track change.label) {
+                        <div class="timeline-change-row">
+                          <div class="timeline-change-title">{{ change.label }}</div>
+                          <div class="timeline-change-values">
+                            <span class="timeline-change-old">Old: <strong>{{ change.oldValue }}</strong></span>
+                            <span class="timeline-change-new">New: <strong>{{ change.newValue }}</strong></span>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="empty-state">
+              <p>No history entries for this item.</p>
+            </div>
+          }
+        }
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="showHistoryModal = false">Close</button>
+      </div>
     </div>
   </div>
 }

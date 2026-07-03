@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Item } from '../models/item.model';
+import { Item, ItemHistory } from '../models/item.model';
 import { ApiResponse } from '../models/api-response.model';
 import { environment } from '../../environments/environment';
 
@@ -33,5 +33,9 @@ export class ItemService {
 
   delete(orgId: string, itemId: string): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(`${this.getUrl(orgId)}/${itemId}`);
+  }
+
+  history(itemId: string ): Observable<ApiResponse<ItemHistory[]>>{
+    return this.http.get<ApiResponse<ItemHistory[]>>(`${environment.apiBase}/items/history/${itemId}`);
   }
 }

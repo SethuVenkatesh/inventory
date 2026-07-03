@@ -16,7 +16,7 @@ public interface ItemRepository extends JpaRepository<Item, UUID> {
 
     List<Item> findByOrganisationIdAndIsActiveTrue(UUID organisationId);
 
-    boolean existsByNameAndOrganisationIdAndIsActiveTrue(String name, UUID organisationId);
+    Item findByNameAndOrganisationIdAndIsActiveTrue(String name, UUID organisationId);
 
     Item findByIdAndOrganisationIdAndIsActiveTrue(UUID id, UUID organisationId);
 

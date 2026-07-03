@@ -7,7 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { OrganisationService } from '../../services/organisation.service';
 import { ItemService } from '../../services/item.service';
 import { Organisation } from '../../models/organisation.model';
-import { Item } from '../../models/item.model';
+import { Item, ItemHistory } from '../../models/item.model';
 import { User } from '../../models/auth.model';
 
 interface Toast {
@@ -52,11 +52,59 @@ export class DashboardComponent implements OnInit {
 
   showAddItemModal = false;
   showEditItemModal = false;
+  showHistoryModal = false;
   editingItem: Item | null = null;
+  history: ItemHistory[] = [];
+
+  private valuesDiffer(a: unknown, b: unknown): boolean {
+    if (a === undefined && b === undefined) return false;
+    if (a === null && b === null) return false;
+    return String(a ?? '') !== String(b ?? '');
+  }
+
+  private getChangedFields(h: ItemHistory): Array<{ label: string; oldValue: string; newValue: string }> {
+    const fields: Array<{ label: string; oldValue: string; newValue: string }> = [];
+
+    if (this.valuesDiffer(h.oldName, h.newName)) {
+      fields.push({
+        label: 'Name',
+        oldValue: h.oldName || '-',
+        newValue: h.newName || '-'
+      });
+    }
+    if (this.valuesDiffer(h.oldRate, h.newRate)) {
+      fields.push({
+        label: 'Rate',
+        oldValue: h.oldRate != null ? h.oldRate.toFixed(2) : '-',
+        newValue: h.newRate != null ? h.newRate.toFixed(2) : '-'
+      });
+    }
+    if (this.valuesDiffer(h.oldCurrency, h.newCurrency)) {
+      fields.push({
+        label: 'Currency',
+        oldValue: h.oldCurrency || '-',
+        newValue: h.newCurrency || '-'
+      });
+    }
+    return fields;
+  }
+
+  getChangeField(h: ItemHistory): string {
+    const fields = this.getChangedFields(h);
+    if (!fields.length) {
+      return 'No changes';
+    }
+    return fields.map(entry => entry.label).join(', ');
+  }
+
+  getChangedValues(h: ItemHistory): Array<{ label: string; oldValue: string; newValue: string }> {
+    return this.getChangedFields(h);
+  }
 
   // Feedback State
   loadingOrgs = false;
   loadingItems = false;
+  loadingHistory = false;
   submitting = false;
   toasts: Toast[] = [];
   private toastIdCounter = 0;
@@ -332,6 +380,33 @@ export class DashboardComponent implements OnInit {
     });
     this.showEditItemModal = true;
   }
+
+  openItemHistoryModal(item: Item): void {
+    if (!item.id) return;
+
+    this.editingItem = item;
+    this.history = [];
+    this.loadingHistory = true;
+    this.showHistoryModal = true;
+
+    this.itemService.history(item.id).subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.history = res.data.slice(0,-1);
+        } else {
+          this.showToast(res.message || 'Failed to load item history', 'error');
+        }
+        this.loadingHistory = false;
+        this.cdr.markForCheck();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.showToast(err.error?.message || 'Error loading item history', 'error');
+        this.loadingHistory = false;
+      }
+    });
+  }
+
 
   onUpdateItem(): void {
     if (this.editItemForm.invalid || !this.editingItem?.id || !this.selectedOrgId) {

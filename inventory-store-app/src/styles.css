@@ -139,6 +139,18 @@ a:hover {
   transition: all var(--transition-fast);
 }
 
+.btn-edit {
+  color: white;
+}
+
+.btn-delete {
+  color: red;
+}
+
+.btn-history {
+  color: gray;
+}
+
 .btn-primary {
   background-color: var(--accent-color);
   color: #ffffff;

@@ -33,8 +33,8 @@ public class ItemService {
     public ItemDTO create(UUID organisationId, ItemDTO dto, User user) {
         Organisation organisation= organisationRepository.findByIdAndIsActiveTrue(organisationId);
         if(organisation==null) throw new ResourceNotFoundException("Organisation not found with id: " + organisationId);
-        boolean itemExsist = itemRepository.existsByNameAndOrganisationIdAndIsActiveTrue(dto.getName(),organisationId);
-        if (itemExsist) {
+        Item existingItem = itemRepository.findByNameAndOrganisationIdAndIsActiveTrue(dto.getName(), organisationId);
+        if (existingItem != null) {
             throw new DuplicateResourceException("Item with name '" + dto.getName() + "' already exists for this organisation.");
         }
         Item item = new Item();;
@@ -55,8 +55,8 @@ public class ItemService {
         if (item == null) {
             throw new ResourceNotFoundException("Item not found with id: " + itemId);
         }
-        boolean itemExsist = itemRepository.existsByNameAndOrganisationIdAndIsActiveTrue(dto.getName(),organisationId);
-        if (itemExsist) {
+        Item existingItem = itemRepository.findByNameAndOrganisationIdAndIsActiveTrue(dto.getName(), organisationId);
+        if (existingItem != null && !existingItem.getId().equals(itemId)) {
             throw new DuplicateResourceException("Item with name '" + dto.getName() + "' already exists for this organisation.");
         }
         itemMapper.toEntity(dto,item);

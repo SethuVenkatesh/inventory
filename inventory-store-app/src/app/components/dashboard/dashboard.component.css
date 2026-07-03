@@ -1,0 +1,90 @@
+/* Timeline modal styles */
+.modal-card {
+	width: 720px;
+	max-width: calc(100% - 48px);
+	background: #0f1724;
+	color: #e6eef8;
+	border-radius: 12px;
+	box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+	overflow: hidden;
+}
+
+.modal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 20px 24px;
+	border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.modal-body {
+	padding: 18px 20px;
+	max-height: 60vh;
+	overflow: auto;
+}
+
+.timeline {
+	position: relative;
+	padding: 8px 0 12px 0;
+}
+
+.timeline-item {
+	display: flex;
+	align-items: flex-start;
+	gap: 16px;
+	padding: 16px 8px;
+	border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.timeline-time {
+	width: 110px;
+	flex-shrink: 0;
+	text-align: right;
+	color: rgba(230,238,248,0.6);
+	font-size: 12px;
+}
+.timeline-time .time-date { font-weight:600; }
+.timeline-time .time-hour { font-size:11px; color:rgba(230,238,248,0.45); }
+
+.timeline-marker {
+	width: 12px;
+	height: 12px;
+	background: linear-gradient(180deg,#34d399,#10b981);
+	border-radius: 50%;
+	margin-top: 10px;
+	box-shadow: 0 0 0 4px rgba(16,185,129,0.06);
+}
+
+.timeline-content {
+	flex: 1 1 auto;
+}
+
+.timeline-header {
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	gap:12px;
+	margin-bottom:6px;
+}
+.timeline-header strong { color:#ffffff; }
+.timeline-field { color:rgba(230,238,248,0.6); font-size:13px; }
+
+.timeline-body .timeline-values { display:flex; gap:12px; flex-wrap:wrap; }
+.timeline-change-row { padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.04); }
+.timeline-change-row:first-child { border-top: none; }
+.timeline-change-title { font-size: 13px; color: #a5b4fc; margin-bottom: 6px; }
+.timeline-change-values { display: flex; flex-wrap: wrap; gap: 16px; color: rgba(230,238,248,0.8); font-size: 13px; }
+.timeline-change-old, .timeline-change-new { display: flex; align-items: center; gap: 6px; }
+.timeline-change-old strong, .timeline-change-new strong { color: #e2e8f0; }
+.timeline-values .old-value, .timeline-values .new-value { font-size:13px; color:rgba(230,238,248,0.8); }
+.timeline-values .value { font-weight:600; margin-left:6px; color:#dbeafe; }
+
+.empty-state { text-align:center; padding:28px 0; color:rgba(230,238,248,0.6); }
+
+/* Make modal responsive on small screens */
+@media (max-width: 640px) {
+	.modal-card { width: 100%; border-radius: 8px; }
+	.timeline-time { display:none; }
+	.timeline-marker { margin-left: 4px; }
+}
+
