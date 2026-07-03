@@ -2,16 +2,16 @@
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-header">
-      <span class="logo-icon">⚡</span>
+      <span class="logo-icon"><mat-icon>flash_on</mat-icon></span>
       <span class="logo-text">InventoryStore</span>
     </div>
     
     <nav class="sidebar-nav">
       <a class="nav-item" [class.active]="activeTab === 'items'" (click)="activeTab = 'items'">
-        <span class="nav-icon">📦</span> Items
+        <span class="nav-icon"><mat-icon>inventory_2</mat-icon></span> Items
       </a>
       <a class="nav-item" [class.active]="activeTab === 'organisations'" (click)="activeTab = 'organisations'">
-        <span class="nav-icon">🏢</span> Organisations
+        <span class="nav-icon"><mat-icon>domain</mat-icon></span> Organisations
       </a>
     </nav>
 
@@ -24,7 +24,7 @@
         </div>
       </div>
       <button class="btn-logout" (click)="logout()">
-        <span>🚪</span> Logout
+        <mat-icon>logout</mat-icon> Logout
       </button>
     </div>
   </aside>
@@ -61,24 +61,24 @@
           <div class="stat-card">
             <div class="stat-label">Total Items</div>
             <div class="stat-value">{{ totalItemsCount }}</div>
-            <div class="stat-icon">📦</div>
+            <div class="stat-icon"><mat-icon>inventory_2</mat-icon></div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Total Rate Value</div>
             <div class="stat-value">{{ totalInventoryValue | number:'1.2-2' }} <span class="currency">INR</span></div>
-            <div class="stat-icon">💰</div>
+            <div class="stat-icon"><mat-icon>monetization_on</mat-icon></div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Active Organisation</div>
             <div class="stat-value text-truncate">{{ activeOrgName }}</div>
-            <div class="stat-icon">🏢</div>
+            <div class="stat-icon"><mat-icon>domain</mat-icon></div>
           </div>
         </div>
 
         <!-- Toolbar -->
         <div class="toolbar">
           <div class="search-bar">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon"><mat-icon>search</mat-icon></span>
             <input 
               type="text" 
               placeholder="Search items by name..." 
@@ -90,11 +90,11 @@
           <div class="toolbar-actions">
             @if (selectedOrgId) {
               <button class="btn btn-primary" (click)="showAddItemModal = true">
-                <span>➕</span> Add Item
+                <mat-icon>add</mat-icon> Add Item
               </button>
             } @else {
               <button class="btn btn-secondary" disabled title="Create an organisation first">
-                <span>➕</span> Add Item
+                <mat-icon>add</mat-icon> Add Item
               </button>
             }
           </div>
@@ -114,20 +114,20 @@
                   <th (click)="changeSort('name')" class="sortable-header">
                     Item Name 
                     @if (itemSortKey === 'name') {
-                      <span>{{ itemSortAsc ? '▲' : '▼' }}</span>
+                      <span><mat-icon>{{ itemSortAsc ? 'arrow_upward' : 'arrow_downward' }}</mat-icon></span>
                     }
                   </th>
                   <th (click)="changeSort('rate')" class="sortable-header">
                     Rate 
                     @if (itemSortKey === 'rate') {
-                      <span>{{ itemSortAsc ? '▲' : '▼' }}</span>
+                      <span><mat-icon>{{ itemSortAsc ? 'arrow_upward' : 'arrow_downward' }}</mat-icon></span>
                     }
                   </th>
                   <th>Currency</th>
                   <th (click)="changeSort('createdAt')" class="sortable-header">
                     Created At
                     @if (itemSortKey === 'createdAt') {
-                      <span>{{ itemSortAsc ? '▲' : '▼' }}</span>
+                      <span><mat-icon>{{ itemSortAsc ? 'arrow_upward' : 'arrow_downward' }}</mat-icon></span>
                     }
                   </th>
                   <th>Created By</th>
@@ -144,10 +144,10 @@
                     <td>{{ item.createdBy || 'System' }}</td>
                     <td class="actions-cell">
                       <button class="btn-action btn-edit" (click)="openEditItemModal(item)" title="Edit Item">
-                        ✏️
+                        <mat-icon>edit</mat-icon>
                       </button>
                       <button class="btn-action btn-delete" (click)="onDeleteItem(item)" title="Delete Item">
-                        🗑️
+                        <mat-icon>delete</mat-icon>
                       </button>
                     </td>
                   </tr>
@@ -155,7 +155,7 @@
                   <tr>
                     <td colspan="6" class="empty-table-row">
                       <div class="empty-state">
-                        <span class="empty-icon">📦</span>
+                        <span class="empty-icon"><mat-icon>inventory_2</mat-icon></span>
                         <h3>No items found</h3>
                         @if (!selectedOrgId) {
                           <p>Please create or select an organisation workspace first.</p>
@@ -186,7 +186,7 @@
           </div>
           <div class="toolbar-actions">
             <button class="btn btn-primary" (click)="showAddOrgModal = true">
-              <span>➕</span> New Organisation
+              <mat-icon>add</mat-icon> New Organisation
             </button>
           </div>
         </div>
@@ -204,7 +204,7 @@
                 @if (org.isPrimary) {
                   <span class="primary-badge">Primary</span>
                 }
-                <div class="org-card-icon">🏢</div>
+                <div class="org-card-icon"><mat-icon>domain</mat-icon></div>
                 <h3 class="org-card-title">{{ org.name }}</h3>
                 <p class="org-card-meta">Created: {{ org.createdAt | date:'mediumDate' }}</p>
                 <p class="org-card-owner">By: {{ org.createdBy }}</p>
@@ -222,7 +222,7 @@
               </div>
             } @empty {
               <div class="empty-state full-width-empty">
-                <span class="empty-icon">🏢</span>
+                <span class="empty-icon"><mat-icon>domain</mat-icon></span>
                 <h3>No organisations found</h3>
                 <p>You don't belong to any organisation. Create one to get started!</p>
                 <button class="btn btn-primary" (click)="showAddOrgModal = true">
@@ -245,7 +245,7 @@
     <div class="modal-card animate-slide-in">
       <div class="modal-header">
         <h3>Create Organisation</h3>
-        <button class="btn-close" (click)="showAddOrgModal = false">×</button>
+        <button class="btn-close" (click)="showAddOrgModal = false"><mat-icon>close</mat-icon></button>
       </div>
       <form [formGroup]="orgForm" (ngSubmit)="onCreateOrg()">
         <div class="modal-body">
@@ -282,7 +282,7 @@
     <div class="modal-card animate-slide-in">
       <div class="modal-header">
         <h3>Rename Organisation</h3>
-        <button class="btn-close" (click)="showEditOrgModal = false">×</button>
+        <button class="btn-close" (click)="showEditOrgModal = false"><mat-icon>close</mat-icon></button>
       </div>
       <form [formGroup]="editOrgForm" (ngSubmit)="onUpdateOrg()">
         <div class="modal-body">
@@ -319,7 +319,7 @@
     <div class="modal-card animate-slide-in">
       <div class="modal-header">
         <h3>Add Inventory Item</h3>
-        <button class="btn-close" (click)="showAddItemModal = false">×</button>
+        <button class="btn-close" (click)="showAddItemModal = false"><mat-icon>close</mat-icon></button>
       </div>
       <form [formGroup]="itemForm" (ngSubmit)="onCreateItem()">
         <div class="modal-body">
@@ -372,7 +372,7 @@
     <div class="modal-card animate-slide-in">
       <div class="modal-header">
         <h3>Edit Item Details</h3>
-        <button class="btn-close" (click)="showEditItemModal = false">×</button>
+        <button class="btn-close" (click)="showEditItemModal = false"><mat-icon>close</mat-icon></button>
       </div>
       <form [formGroup]="editItemForm" (ngSubmit)="onUpdateItem()">
         <div class="modal-body">
@@ -424,11 +424,7 @@
   @for (toast of toasts; track toast.id) {
     <div class="toast animate-slide-in-right" [class]="'toast-' + toast.type">
       <span class="toast-icon">
-        @if (toast.type === 'success') { Check }
-        @else if (toast.type === 'error') { Alert }
-        @else { Info }
-      </span>
-      <span class="toast-message">{{ toast.message }}</span>
-    </div>
-  }
+        @if (toast.type === 'success') { <mat-icon>check_circle</mat-icon> }
+        @else if (toast.type === 'error') { <mat-icon>error</mat-icon> }
+        @else { <mat-icon>info</mat-icon> }
 </div>

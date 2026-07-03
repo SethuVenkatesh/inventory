@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../services/auth.service';
 import { OrganisationService } from '../../services/organisation.service';
 import { ItemService } from '../../services/item.service';
@@ -18,7 +19,7 @@ interface Toast {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, DatePipe, DecimalPipe],
+  imports: [ReactiveFormsModule, FormsModule, DatePipe, DecimalPipe, MatIconModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
