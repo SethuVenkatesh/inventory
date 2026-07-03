@@ -420,6 +420,7 @@
 }
 
 <!-- Toast Notifications -->
+<!-- Toast Notifications -->
 <div class="toast-container">
   @for (toast of toasts; track toast.id) {
     <div class="toast animate-slide-in-right" [class]="'toast-' + toast.type">
@@ -427,4 +428,9 @@
         @if (toast.type === 'success') { <mat-icon>check_circle</mat-icon> }
         @else if (toast.type === 'error') { <mat-icon>error</mat-icon> }
         @else { <mat-icon>info</mat-icon> }
+      </span>
+      <span class="toast-message">{{ toast.message }}</span>
+    </div>
+  }
 </div>
+
