@@ -98,12 +98,15 @@ export class DashboardComponent implements OnInit {
   }
 
   // Toast System
-  showToast(message: string, type: 'success' | 'error' | 'info' = 'success'): void {
+  showToast(message: string, type: 'success' | 'error' | 'info' = 'success', duration = 4000): void {
     const id = ++this.toastIdCounter;
-    this.toasts.push({ id, type, message });
+    this.toasts = [...this.toasts, { id, type, message }];
+    this.cdr.detectChanges();
+
     setTimeout(() => {
       this.toasts = this.toasts.filter(t => t.id !== id);
-    }, 4000);
+      this.cdr.detectChanges();
+    }, duration);
   }
 
   // Organizations Methods
