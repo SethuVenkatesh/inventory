@@ -6,6 +6,8 @@ import com.project.sethu.inventory_store.exception.ResourceNotFoundException;
 import com.project.sethu.inventory_store.mapper.ItemsHistoryMapper;
 import com.project.sethu.inventory_store.repository.ItemRepository;
 import com.project.sethu.inventory_store.repository.ItemsHistoryRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,7 @@ public class ItemsHistoryService {
     }
 
     // All history for a specific item
+    @Cacheable(value = "itemsHistory", key = "#itemId")
     public List<ItemsHistoryDTO> getByItem(UUID itemId) {
         itemRepository.findById(itemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Item", itemId));
@@ -40,6 +43,11 @@ public class ItemsHistoryService {
     public List<ItemsHistoryDTO> getByOrganisation(UUID orgId) {
         return mapper.toDTOList(
                 historyRepository.findByOrganisationIdOrderByChangedAtDesc(orgId));
+    }
+
+    @CacheEvict(value = "itemsHistory", key = "#itemId")
+    public void evictItemHistory(UUID itemId) {
+        // no-op method used to clear the cached item history when the item changes
     }
 
 }

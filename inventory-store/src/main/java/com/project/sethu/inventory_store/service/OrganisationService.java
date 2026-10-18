@@ -10,6 +10,10 @@ import com.project.sethu.inventory_store.exception.ResourceNotFoundException;
 import com.project.sethu.inventory_store.mapper.OrganisationMapper;
 import com.project.sethu.inventory_store.repository.OrganisationRepository;
 import com.project.sethu.inventory_store.repository.UserOrganisationRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,21 +36,27 @@ public class OrganisationService {
         this.mapper = mapper;
     }
 
+    @Cacheable(value = "organisations", key = "#organisationId")
     public OrganisationDTO getById(User user, UUID organisationId) {
         return mapper.toDTO(findOrThrow(user.getId(),organisationId));
     }
 
+    @Cacheable(value = "organisations", key = "#user.id")
     public List<OrganisationDTO> getAllOrganisation(User user) {
         List<UserOrganisation> userOrgs =
                 userOrganisationRepository.findActiveOrganisationsByUserId(user.getId());
 
         return userOrgs.stream().map(uo -> {
             OrganisationDTO dto = mapper.toDTO(uo.getOrganisation());
-            dto.setIsPrimary(uo.getIsPrimary());   // mark which is primary
+            dto.setIsPrimary(uo.getIsPrimary())
+            ;   // mark which is primary
             return dto;
         }).collect(Collectors.toList());
     }
 
+    @Caching(evict = {
+        @CacheEvict(value = "organisations", key = "#user.id")
+    })
     public OrganisationDTO create(User user,OrganisationDTO dto) {
         Organisation org= new Organisation();
         mapper.toEntity(dto, org);
@@ -64,12 +74,24 @@ public class OrganisationService {
         return mapper.toDTO(savedOrg);
     }
 
+    @Caching(
+        put = {
+            @CachePut(value = "organisations", key = "#organisationId")
+        },
+        evict = {
+            @CacheEvict(value = "organisations", key = "#user.id")
+        }
+    )
     public OrganisationDTO update(User user, OrganisationDTO dto,UUID organisationId ) {
         Organisation org = findOrThrow(user.getId(),organisationId);
         mapper.toEntity(dto, org);
         return mapper.toDTO(repository.save(org));
     }
 
+    @Caching(evict = {
+        @CacheEvict(value = "organisations", key = "#organisationId"),
+        @CacheEvict(value = "organisations", key = "#user.id")
+    })
     public void softDelete(User user, UUID organisationId) {
         Organisation org = findOrThrow(user.getId(),organisationId);
         org.setIsActive(false);

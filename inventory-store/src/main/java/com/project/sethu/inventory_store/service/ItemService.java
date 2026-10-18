@@ -9,6 +9,10 @@ import com.project.sethu.inventory_store.exception.ResourceNotFoundException;
 import com.project.sethu.inventory_store.mapper.ItemMapper;
 import com.project.sethu.inventory_store.repository.ItemRepository;
 import com.project.sethu.inventory_store.repository.OrganisationRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +34,9 @@ public class ItemService {
 
 
 
+    @Caching(evict = {
+        @CacheEvict(value = "items", key = "#organisationId")
+    })
     public ItemDTO create(UUID organisationId, ItemDTO dto, User user) {
         Organisation organisation= organisationRepository.findByIdAndIsActiveTrue(organisationId);
         if(organisation==null) throw new ResourceNotFoundException("Organisation not found with id: " + organisationId);
@@ -47,7 +54,15 @@ public class ItemService {
 
     }
 
-
+    @Caching(
+        put = {
+            @CachePut(value = "items", key = "#itemId")
+        },
+        evict = {
+            @CacheEvict(value = "items", key = "#organisationId"),
+            @CacheEvict(value = "itemsHistory", key = "#itemId")
+        }
+    )
     public ItemDTO update(UUID organisationId, UUID itemId, ItemDTO dto, User user) {
         Organisation organisation= organisationRepository.findByIdAndIsActiveTrue(organisationId);
         if(organisation==null) throw new ResourceNotFoundException("Organisation not found with id: " + organisationId);
@@ -65,7 +80,7 @@ public class ItemService {
         return itemMapper.toDTO(savedItem);
     }
 
-
+    @Cacheable(value = "items", key = "#organisationId")
     public List<ItemDTO> getAll(UUID organisationId, User user)  {
         Organisation organisation= organisationRepository.findByIdAndIsActiveTrue(organisationId);
         if(organisation==null) throw new ResourceNotFoundException("Organisation not found with id: " + organisationId);
@@ -73,6 +88,7 @@ public class ItemService {
         return itemMapper.toDTOList(items);
     }
 
+    @Cacheable(value = "items", key = "#itemId")
     public ItemDTO getById(UUID organisationId,UUID itemId, User user) {
         Organisation organisation= organisationRepository.findByIdAndIsActiveTrue(organisationId);
         if(organisation==null) throw new ResourceNotFoundException("Organisation not found with id: " + organisationId);
@@ -83,6 +99,11 @@ public class ItemService {
         return itemMapper.toDTO(item);
     }
 
+    @Caching(evict = {
+        @CacheEvict(value = "items", key = "#organisationId"),
+        @CacheEvict(value = "items", key = "#itemId"),
+        @CacheEvict(value = "itemsHistory", key = "#itemId")
+    })
     public void softDelete(UUID organisationId, UUID itemId, User user) {
         Item item = itemRepository.findByIdAndOrganisationIdAndIsActiveTrue(itemId, organisationId);
         if (item == null) {
