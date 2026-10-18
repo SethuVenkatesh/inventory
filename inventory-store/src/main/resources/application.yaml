@@ -2,15 +2,24 @@ spring:
   application:
     name: inventory-store
   datasource:
-    url: jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=require
-    username: postgres.lzgkypcahxycfpfnlaqd
-    password: SethuVirat@18
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/inventory}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
     show-sql: true
+  data:
+    redis:
+      url: ${SPRING_DATA_REDIS_URL:redis://localhost:6379}
+      # Configure username/password if your Redis server requires them
+  cache:
+    type: redis
+    redis:
+      time-to-live: 10m
+      cache-null-values: false
 # JWT (top-level properties expected by JwtService @Value)
 jwt:
   secret: RjM0b1J3M3FJYzF0Wk5rR1RkR1l6M1FhU1VjT2RrT1pVd0VjY2t1Vw=
