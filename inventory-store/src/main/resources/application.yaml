@@ -20,6 +20,16 @@ spring:
     redis:
       time-to-live: 10m
       cache-null-values: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
 # JWT (top-level properties expected by JwtService @Value)
 jwt:
   secret: RjM0b1J3M3FJYzF0Wk5rR1RkR1l6M1FhU1VjT2RrT1pVd0VjY2t1Vw=
