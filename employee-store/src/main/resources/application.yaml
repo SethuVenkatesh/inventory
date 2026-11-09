@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: employee-store
+  mongodb:
+      uri: ${SPRING_MONGODB_URI:mongodb+srv://sethuvenkateshvk_db_user:<db_password>@employee.qb215yk.mongodb.net/employee_store}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
