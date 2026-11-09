@@ -3,10 +3,12 @@ package com.project.sethu.inventory_store.repository;
 
 import com.project.sethu.inventory_store.entity.UserOrganisation;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,6 +23,10 @@ public interface UserOrganisationRepository extends JpaRepository<UserOrganisati
     Optional<UserOrganisation> findByUserIdAndOrganisationId(UUID userId, UUID organisationId);
 
     boolean existsByUserIdAndOrganisationId(UUID userId, UUID organisationId);
+
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("DELETE FROM UserOrganisation uo WHERE uo.organisation.id IN :organisationIds")
+    int deleteByOrganisationIds(@Param("organisationIds") Collection<UUID> organisationIds);
 
     // Get all organisations for a user
     @Query("""
